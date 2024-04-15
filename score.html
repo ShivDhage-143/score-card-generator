@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scorecard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Main heading -->
+  <h1>Sant Gadge Baba Amravati University</h1>
+  <!-- Sub heading -->
+  <h2>Scorecard</h2>
+  <!-- Container for student information -->
+  <div class="studentInfo" id="studentInfo">
+    <!-- Full name and roll number will be dynamically inserted here -->
+  </div>
+  <!-- Table to display scorecard data -->
+  <table id="scoreTable">
+    <thead>
+      <tr>
+        <!-- Table header columns -->
+        <th>Sr. No.</th>
+        <th>Subject</th>
+        <th>Maximum Marks</th>
+        <th>Marks Obtained</th>
+        <th>Percentage</th>
+        <th>Grade</th>
+      </tr>
+    </thead>
+    <tbody id="scoreTableBody">
+        <!-- Scorecard data will be dynamically inserted here -->
+    </tbody>
+  </table>
+  <!-- Paragraph element for remarks -->
+  <p id="remarks"></p>
+
+  <!-- JavaScript script to dynamically populate the page -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Retrieve query parameters
+      const params = new URLSearchParams(window.location.search);
+      const fullName = params.get('fullName');
+      const rollNumber = params.get('rollNumber');
+      const subjects = JSON.parse(params.get('subjects'));
+
+      // Display full name and roll number
+      const studentInfo = document.getElementById('studentInfo');
+      studentInfo.innerHTML = `
+        <p>Student Name: ${fullName}</p>
+        <p>Roll Number: ${rollNumber}</p>
+      `;
+
+      // Display scorecard data
+      const scoreTableBody = document.getElementById("scoreTableBody"); // Corrected id
+      subjects.forEach((subject, index) => {
+        const row = scoreTableBody.insertRow();
+        row.insertCell(0).textContent = index + 1;
+        row.insertCell(1).textContent = subject.subject;
+        row.insertCell(2).textContent = subject.outOf;
+        row.insertCell(3).textContent = subject.obtainedMarks;
+        const percentage = (subject.obtainedMarks / subject.outOf) * 100;
+        row.insertCell(4).textContent = percentage.toFixed(2) + '%';
+        const grade = percentage >= 60 ? 'Pass' : 'Fail';
+        row.insertCell(5).textContent = grade;
+      });
+
+      // Display remarks
+      const remarks = document.getElementById('remarks');
+      const failedSubjects = subjects.filter(subject => subject.obtainedMarks < subject.outOf / 2).length;
+      if (failedSubjects > 0) {
+        remarks.textContent = `Failed in ${failedSubjects} subject(s)`;
+        remarks.style.color = 'red';
+      } else {
+        remarks.textContent = 'Passed';
+        remarks.style.color = 'green';
+      }
+    });
+  </script>
+</body>
+</html>

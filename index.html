@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Score Card Generator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Main heading -->
+  <h1>Student Information Form</h1>
+  <!-- Sub heading -->
+  <p class="label">Now you can build your score card here.</p>
+  <!-- Form container -->
+  <div class="Form">
+    <!-- Scorecard form -->
+    <form id="scoreForm">
+      <!-- Input fields for full name and roll number -->
+      <label for="fullName">Full Name</label>
+      <input type="text" name="fullName" id="fullName" placeholder="Enter full name" pattern="[A-Za-z ]{1,50}" required>
+      <br>
+      <label for="rollNumber">Roll Number</label>
+      <input type="text" name="rollNumber" id="rollNumber" placeholder="Enter roll no" pattern="[A-Za-z]{4}\d{4}[A-Za-z]" required>
+      <br>
+      <!-- Container for subject input fields -->
+      <div id="subjects">
+        <label for="rollNumber">Subjects</label>
+        <!-- Subject input fields -->
+        <div class="subject-row">
+          <input type="text" name="subject" class="subject" placeholder="Subject" required>
+          <select name="out-of" class="out-of" required>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+          <input name="obtained-marks" type="number" class="obtained-marks" placeholder="Obtained Marks" min="0" required>
+          <button type="button" class="remove">X</button>
+        </div>
+      </div>
+      <!-- Button to add more subjects -->
+      <button type="button" id="addSubject">Add Subject</button>
+      <br>
+      <br>
+      <!-- Submit button -->
+      <button class="submit" type="submit" id="submitButton">Submit</button>
+    </form>
+  </div>
+  <!-- JavaScript to dynamically add and submit form data -->
+  <script>
+    // Function to create a new subject row
+    function createSubjectRow() {
+      const subjectRow = document.createElement('div');
+      subjectRow.classList.add('subject-row');
+      subjectRow.innerHTML = `
+        <input type="text" name="subject" class="subject" placeholder="Subject" required>
+        <select name="out-of" class="out-of" required>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <input name="obtained-marks" type="number" class="obtained-marks" placeholder="Obtained Marks" min="0" required>
+        <button type="button" class="remove">X</button>
+      `;
+      // Add event listener for removing the subject row
+      const removeButton = subjectRow.querySelector('.remove');
+      removeButton.addEventListener('click', function() {
+        subjectRow.remove();
+      });
+      return subjectRow;
+    }
+
+    // Add event listener for the "Add More Subject" button
+    document.getElementById('addSubject').addEventListener('click', function() {
+      const subjectsDiv = document.getElementById('subjects');
+      const newSubjectRow = createSubjectRow();
+      subjectsDiv.appendChild(newSubjectRow);
+    });
+
+    // Add event listener for form submission
+    document.getElementById('scoreForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      // Get form data
+      const formData = new FormData(this);
+      const fullName = formData.get('fullName');
+      const rollNumber = formData.get('rollNumber');
+      const subjects = [];
+      formData.getAll('subject').forEach((subject, index) => {
+        const outOf = formData.getAll('out-of')[index];
+        const obtainedMarks = formData.getAll('obtained-marks')[index];
+        subjects.push({ subject, outOf, obtainedMarks });
+      });
+      // Redirect to score.html with query parameters
+      const queryString = `fullName=${fullName}&rollNumber=${rollNumber}&subjects=${JSON.stringify(subjects)}`;
+      window.location.href = `score.html?${queryString}`;
+    });
+  </script>
+</body>
+</html>
